@@ -16,7 +16,7 @@ That will fire the relays on: 1, 5, 6, 7, 9, 11, 15, 16 and 17.
 
 The list is the direction of the event where Brick is the default current brick.
 
-"If the event does not come to you, you come to it."
+*"If the event does not come to you, you come to it."*
 
-# Installation
+## Installation
 Put Event_FireRelayNum.zip into the Add-Ons folder in your Blockland folder.
