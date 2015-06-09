@@ -1,0 +1,3 @@
+Title: FireRelayNum
+Author: McTwist
+Instead of executing all onRelay in a brick, you choose which one. Also contains the direction.
