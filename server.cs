@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	4
+// Version	::	5
 // ================
 // Made by	::	McTwist
-// Date		::	13-01-27
+// Date		::	17-08-27
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -47,19 +47,18 @@ function FireRelayNum::parseNumbers(%num)
 // When processing an input event
 function SimObject::ProcessFireRelay(%obj, %process, %client)
 {
-	// Turn into temporary smarter data and avoid multiple relays
-	for (%i = 0; %i < getWordCount(%process); %i++)
-		%tempEvent[getWord(%process, %i)] = 1;
-	
-	// Go through events
-	for (%i = 0; %i < %obj.numEvents; %i++)
+	// Onhly check for those events we are interested in
+	%count = getWordCount(%process);
+	for (%j = 0; %j < %count; %j++)
 	{
+		%i = getWord(%process, %j);
+		
+		// Already processed
+		if (%tempEvent[%i])
+			continue;
+
 		// Enabled event
 		if (!%obj.eventEnabled[%i])
-			continue;
-		
-		// The chosen event
-		if (!%tempEvent[%i])
 			continue;
 		
 		// Not onRelay
@@ -67,31 +66,29 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 			continue;
 		
 		// Target another brick
-		%targetBrick = (%obj.eventTargetIdx[%i] == -1);
-		if (%targetBrick)
+		if (%obj.eventTargetIdx[%i] == -1)
 		{
-			%num = outputEvent_GetNumParametersFromIdx("fxDTSBrick", %obj.eventOutputIdx[%i]);
-			%cObj = %obj.eventNT[%i];
+			%type = "fxDTSBrick";
+			%bricks = getBricksFromName(%obj.eventNT[%i]);
 		}
 		// Self
 		else
 		{
 			%type = inputEvent_GetTargetClass(%obj.getClassName(), %obj.eventInputIdx[%i], %obj.eventTargetIdx[%i]);
-			%num = outputEvent_GetNumParametersFromIdx(%type, %obj.eventOutputIdx[%i]);
-			%cObj = %obj;
+			%bricks = %obj;
 		}
+
+		// Parameters
+		%numParams = outputEvent_GetNumParametersFromIdx(%type, %obj.eventOutputIdx[%i]);
 		
 		// Get parameters
 		%param = "";
-		for (%n = 1; %n <= %num; %n++)
+		for (%n = 1; %n <= %numParams; %n++)
 			%param = %param @ ", \"" @ expandEscape(%obj.eventOutputParameter[%i, %n]) @ "\"";
 		
 		// Append client
 		if (%obj.eventOutputAppendClient[%i] && isObject(%client))
 			%param = %param @ ", " @ %client;
-		
-		// Handle multiple bricks
-		%bricks = (%targetBrick) ? getBricksFromName(%cObj) : %cObj;
 		
 		// Go through list/brick
 		%size = getWordCount(%bricks);
@@ -100,13 +97,16 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 			%next = getWord(%bricks, %n);
 			
 			// Call for event function
+			// Note: There is no other feasible way to do this on
 			eval("%event = %next.schedule(" @ %obj.eventDelay[%i] @ ", " @ %obj.eventOutput[%i] @ %param @ ");");
 			
 			// To be able to cancel an event
 			%obj.addScheduledEvent(%event);
 		}
+
+		// Mark as processed
+		%tempEvent[%i] = 1;
 	}
-	return %obj;
 }
 
 // Events
