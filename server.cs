@@ -65,13 +65,13 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		if (%obj.eventInput[%i] !$= "onRelay")
 			continue;
 		
-		// Target another brick
+		// Self
 		if (%obj.eventTargetIdx[%i] == -1)
 		{
 			%type = "fxDTSBrick";
 			%bricks = getBricksFromName(%obj.eventNT[%i]);
 		}
-		// Self
+		// Target another brick
 		else
 		{
 			%type = inputEvent_GetTargetClass(%obj.getClassName(), %obj.eventInputIdx[%i], %obj.eventTargetIdx[%i]);
