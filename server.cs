@@ -111,7 +111,7 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 
 // Events
 
-registerOutputEvent(fxDTSBrick, "fireRelayNum", "string 100 100" TAB "list Brick 0 Up 1 Down 2 North 3 East 4 South 5 West 6");
+registerOutputEvent(fxDTSBrick, "fireRelayNum", "string 100 100" TAB "list Brick 0 Up 1 Down 2 North 3 East 4 South 5 West 6", true);
 
 function fxDTSBrick::fireRelayNum(%brick, %num, %dir, %client)
 {
