@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	5
+// Version	::	6
 // ================
 // Made by	::	McTwist
-// Date		::	17-08-27
+// Date		::	17-09-15
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -112,6 +112,7 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 // Events
 
 registerOutputEvent(fxDTSBrick, "fireRelayNum", "string 100 100" TAB "list Brick 0 Up 1 Down 2 North 3 East 4 South 5 West 6", true);
+registerOutputEvent(fxDTSBrick, "fireRelayRandomNum", "string 100 100" TAB "list Brick 0 Up 1 Down 2 North 3 East 4 South 5 West 6", true);
 
 function fxDTSBrick::fireRelayNum(%brick, %num, %dir, %client)
 {
@@ -124,6 +125,48 @@ function fxDTSBrick::fireRelayNum(%brick, %num, %dir, %client)
 	if (%pass $= "")
 		return %brick;
 	
+	$inputTarget_Self = %brick;
+	
+	// Brick
+	if (%dir $= "0")
+		%brick.ProcessFireRelay(%pass, %client);
+	// Direction
+	else
+	{
+		%bricks = %brick.getBricksDir(%dir);
+		
+		%size = getWordCount(%bricks);
+		for (%i = 0; %i < %size; %i++)
+		{
+			%next = getWord(%bricks, %i);
+			
+			// No events, do nothing
+			if (%next.numEvents == 0)
+				continue;
+			
+			%next.ProcessFireRelay(%pass, %client);
+		}
+	}
+	
+	return %brick;
+}
+
+function fxDTSBrick::fireRelayRandomNum(%brick, %num, %dir, %client)
+{
+	if (%num $= "")
+		return %brick;
+	
+	// Get numbers
+	%pass = FireRelayNum::parseNumbers(%num);
+	
+	if (%pass $= "")
+		return %brick;
+	
+	// Randomly pick one
+	// Note: If you got the same number several times, then the chance is
+	// higher for that number to be relayed
+	%pass = getWord(%pass, getRandom(0, getWordCount(%pass) - 1));
+
 	$inputTarget_Self = %brick;
 	
 	// Brick
