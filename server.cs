@@ -125,8 +125,6 @@ function fxDTSBrick::fireRelayNum(%brick, %num, %dir, %client)
 	if (%pass $= "")
 		return %brick;
 	
-	$inputTarget_Self = %brick;
-	
 	// Brick
 	if (%dir $= "0")
 		%brick.ProcessFireRelay(%pass, %client);
@@ -166,8 +164,6 @@ function fxDTSBrick::fireRelayRandomNum(%brick, %num, %dir, %client)
 	// Note: If you got the same number several times, then the chance is
 	// higher for that number to be relayed
 	%pass = getWord(%pass, getRandom(0, getWordCount(%pass) - 1));
-
-	$inputTarget_Self = %brick;
 	
 	// Brick
 	if (%dir $= "0")
