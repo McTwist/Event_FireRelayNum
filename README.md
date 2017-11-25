@@ -6,9 +6,11 @@ You choose which onRelays to fire. Just insert the number, or numbers of those r
 
 ### Example
 
-* onActivate > Self > fireRelayNum > 1 Brick
-* onRelay > Self > setColor > <blue>
-* onRelay > Self > setColor > <white>
+```
+onActivate -> Self -> fireRelayNum ( 1, Brick)
+onRelay -> Self -> setColor ( blue )
+onRelay -> Self -> setColor ( white )
+```
 
 The brick will be colored blue.
 You can also insert multiple number, like: 1 5-7 9 11 15-17
@@ -16,9 +18,11 @@ That will fire the relays on: 1, 5, 6, 7, 9, 11, 15, 16 and 17.
 
 The list is the direction of the event where Brick is the default current brick.
 
-* onActivate > Self > fireRelayRandomNum > 1-2 Brick
-* onRelay > Self > setColor > <blue>
-* onRelay > Self > setColor > <white>
+```
+onActivate -> Self -> fireRelayRandomNum ( "1-2", Brick )
+onRelay -> Self -> setColor ( blue )
+onRelay -> Self -> setColor ( white )
+```
 
 The brick will randomly become blue or white.
 
