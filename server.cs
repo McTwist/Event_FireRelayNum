@@ -45,6 +45,7 @@ function FireRelayNum::parseNumbers(%num)
 }
 
 // When processing an input event
+// Used to bypass the limitations of onRelay
 function SimObject::ProcessFireRelay(%obj, %process, %client)
 {
 	// Onhly check for those events we are interested in
@@ -65,17 +66,21 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		if (%obj.eventInput[%i] !$= "onRelay")
 			continue;
 		
-		// Self
+		// Target another brick
 		if (%obj.eventTargetIdx[%i] == -1)
 		{
 			%type = "fxDTSBrick";
-			%bricks = getBricksFromName(%obj.eventNT[%i]);
+			%group = getBrickGroupFromObject(%obj);
+			%name = %obj.eventNT[%i];
+			for (%bricks = 0; %bricks < %group.NTObjectCount[%name]; %bricks++)
+				%bricks[%bricks] = %group.NTObject[%name, %bricks];
 		}
-		// Target another brick
+		// Self
 		else
 		{
 			%type = inputEvent_GetTargetClass(%obj.getClassName(), %obj.eventInputIdx[%i], %obj.eventTargetIdx[%i]);
-			%bricks = %obj;
+			%bricks = 1;
+			%bricks[0] = %obj;
 		}
 
 		// Parameters
@@ -91,14 +96,13 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 			%param = %param @ ", " @ %client;
 		
 		// Go through list/brick
-		%size = getWordCount(%bricks);
-		for (%n = 0; %n < %size; %n++)
+		for (%n = 0; %n < %bricks; %n++)
 		{
-			%next = getWord(%bricks, %n);
+			%next = %bricks[%n];
 			
 			// Call for event function
 			// Note: There is no other feasible way to do this on
-			eval("%event = %next.schedule(" @ %obj.eventDelay[%i] @ ", " @ %obj.eventOutput[%i] @ %param @ ");");
+			eval("%event = %next.schedule(%obj.eventDelay[%i], %obj.eventOutput[%i]" @ %param @ ");");
 			
 			// To be able to cancel an event
 			%obj.addScheduledEvent(%event);
@@ -296,27 +300,4 @@ function fxDTSBrick::getBricksDir(%brick, %dir)
 	}
 	
 	return trim(%bricks);
-}
-
-// Get a list of bricks with the same name
-function getBricksFromName(%name)
-{
-	%bricks = "";
-	// Locate and rename
-	while (isObject(%brick = %name))
-	{
-		%id = %brick.getID();
-		%bricks = %bricks SPC %id;
-		%id.setName(%name @ "_");
-	}
-	
-	%bricks = trim(%bricks);
-	// Reset names
-	%size = getWordCount(%bricks);
-	for (%i = 0; %i < %size; %i++)
-	{
-		getWord(%bricks, %i).setName(%name);
-	}
-	
-	return %bricks;
 }
