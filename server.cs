@@ -200,7 +200,8 @@ package FireRelayNum
 	function serverCmdAddEvent(%client, %enabled, %inputEvent, %delay, %target, %nameId, %outputEvent, %p0, %p1, %p2, %p3, %p4, %p5, %p6, %p7, %p8, %p9)
 	{
 		// Prevent schedule overflow
-		if (%target <= 0 && $OutputEvent_NamefxDTSBrick_[%outputEvent] $= "fireRelayNum" && %delay < 33)
+		if (%target <= 0 && %delay < 33
+			&& getSubStr($OutputEvent_NamefxDTSBrick_[%outputEvent], 0, 9) $= "fireRelay")
 			%delay = 33;
 		return Parent::serverCmdAddEvent(%client, %enabled, %inputEvent, %delay, %target, %nameId, %outputEvent, %p0, %p1, %p2, %p3, %p4, %p5, %p6, %p7, %p8, %p9);
 	}
