@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	7
+// Version	::	8
 // ================
 // Made by	::	McTwist
-// Date		::	17-12-08
+// Date		::	18-01-24
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -66,21 +66,34 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		if (%obj.eventInput[%i] !$= "onRelay")
 			continue;
 		
-		// Target another brick
+		// Target brick(s)
 		if (%obj.eventTargetIdx[%i] == -1)
 		{
 			%type = "fxDTSBrick";
 			%group = getBrickGroupFromObject(%obj);
 			%name = %obj.eventNT[%i];
-			for (%bricks = 0; %bricks < %group.NTObjectCount[%name]; %bricks++)
-				%bricks[%bricks] = %group.NTObject[%name, %bricks];
+			for (%objs = 0; %objs < %group.NTObjectCount[%name]; %objs++)
+				%objs[%objs] = %group.NTObject[%name, %objs];
 		}
 		// Self
 		else
 		{
 			%type = inputEvent_GetTargetClass(%obj.getClassName(), %obj.eventInputIdx[%i], %obj.eventTargetIdx[%i]);
-			%bricks = 1;
-			%bricks[0] = %obj;
+			%objs = 1;
+			// Get object from type (Event_onRelay)
+			switch$ (%type)
+			{
+			case "Bot":
+				%objs0 = %obj.hBot;
+			case "Player":
+				%objs0 = %client.player;
+			case "GameConnection":
+				%objs0 = %client;
+			case "Minigame":
+				%objs0 = getMinigameFromObject(%client);
+			default:
+				%objs0 = %obj;
+			}
 		}
 
 		// Parameters
@@ -96,9 +109,12 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 			%param = %param @ ", " @ %client;
 		
 		// Go through list/brick
-		for (%n = 0; %n < %bricks; %n++)
+		for (%n = 0; %n < %objs; %n++)
 		{
-			%next = %bricks[%n];
+			%next = %objs[%n];
+
+			if (!isObject(%next))
+				continue;
 			
 			// Call for event function
 			// Note: There is no other feasible way to do this on
@@ -111,6 +127,7 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		// Mark as processed
 		%tempEvent[%i] = 1;
 	}
+	return "";
 }
 
 // Events
