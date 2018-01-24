@@ -1,4 +1,4 @@
-# Output Event - FireRelayNum (v7)
+# Output Event - FireRelayNum (v8)
 Choose which onRelays to fire
 
 ## Description
