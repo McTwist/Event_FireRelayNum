@@ -1,0 +1,2 @@
+fireRelayNum	0	2
+fireRelayRandomNum	0	2
