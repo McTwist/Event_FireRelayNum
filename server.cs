@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	8
+// Version	::	9
 // ================
 // Made by	::	McTwist
-// Date		::	18-01-24
+// Date		::	19-05-06
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -240,7 +240,7 @@ function fxDTSBrick::getBricksDir(%brick, %dir)
 	
 	// Get size
 	%datablock = %brick.getDatablock();
-	%rot = getWord(%obj.rotation, 3) % 180;
+	%rot = getWord(%brick.rotation, 3) % 180;
 	if (%rot $= 90)
 	{
 		%sizex = %datablock.brickSizeY * 0.5;
