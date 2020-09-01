@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	9
+// Version	::	10
 // ================
 // Made by	::	McTwist
-// Date		::	19-05-06
+// Date		::	20-09-01
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -102,11 +102,17 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		// Get parameters
 		%param = "";
 		for (%n = 1; %n <= %numParams; %n++)
-			%param = %param @ ", \"" @ expandEscape(%obj.eventOutputParameter[%i, %n]) @ "\"";
+			%p[%n] = %obj.eventOutputParameter[%i, %n];
 		
 		// Append client
 		if (%obj.eventOutputAppendClient[%i] && isObject(%client))
-			%param = %param @ ", " @ %client;
+		{
+			%o[%n] = %client;
+			%numParams++;
+		}
+
+		%eventDelay = %obj.eventDelay[%i];
+		%eventOutput = %obj.eventOutput[%i];
 		
 		// Go through list/brick
 		for (%n = 0; %n < %objs; %n++)
@@ -117,11 +123,19 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 				continue;
 			
 			// Call for event function
-			// Note: There is no other feasible way to do this on
-			eval("%event = %next.schedule(%obj.eventDelay[%i], %obj.eventOutput[%i]" @ %param @ ");");
+			switch (%numParams)
+			{
+			case 0: %event = %next.schedule(%eventDelay, %eventOutput);
+			case 1: %event = %next.schedule(%eventDelay, %eventOutput, %p1);
+			case 2: %event = %next.schedule(%eventDelay, %eventOutput, %p1, %p2);
+			case 3: %event = %next.schedule(%eventDelay, %eventOutput, %p1, %p2, %p3);
+			case 4: %event = %next.schedule(%eventDelay, %eventOutput, %p1, %p2, %p3, %p4);
+			case 5: %event = %next.schedule(%eventDelay, %eventOutput, %p1, %p2, %p3, %p4, %p5);
+			}
 			
 			// To be able to cancel an event
-			%obj.addScheduledEvent(%event);
+			if (%delay > 0)
+				%obj.addScheduledEvent(%event);
 		}
 
 		// Mark as processed
