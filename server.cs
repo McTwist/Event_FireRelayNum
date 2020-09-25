@@ -1,9 +1,9 @@
 // ================
 // Name		::	FireRelayNum
-// Version	::	10
+// Version	::	11
 // ================
 // Made by	::	McTwist
-// Date		::	20-09-01
+// Date		::	20-09-25
 // Info		::	Event that choose what onRelay to use
 // License	::	Free to use
 // ================
@@ -107,7 +107,7 @@ function SimObject::ProcessFireRelay(%obj, %process, %client)
 		// Append client
 		if (%obj.eventOutputAppendClient[%i] && isObject(%client))
 		{
-			%o[%n] = %client;
+			%p[%n] = %client;
 			%numParams++;
 		}
 
